@@ -16,3 +16,5 @@ class App:
         pyxel.cls(0)
 
 App()
+
+#End
