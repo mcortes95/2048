@@ -9,8 +9,14 @@ class App:
         pyxel.mouse(True)
         self.pl=player.Player()
         pyxel.run(self.update,self.draw)
+    
+    def new_game(self):
+        self.pl=player.Player()
 
     def update(self):
+        self.pl.update()
+        if pyxel.btnp(pyxel.KEY_R):
+            self.new_game()
         if pyxel.btnp(pyxel.KEY_Q):
             pyxel.quit()
 
