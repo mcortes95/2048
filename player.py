@@ -105,6 +105,7 @@ class Player:
                     if type(tile_checked) is not int:
                         if tile_checked.value==tile.value:
                             print("merge")
+                            merging_tiles.append([tile_checked,tile])
                     while tile_checked == 0:
                         tile.position=vector.vector(mv.x,mv.y)    
                         mv=vector.vector(tile.position.x+x,tile.position.y+y)
@@ -112,8 +113,9 @@ class Player:
                         if type(tile_checked) is not int:
                             if tile_checked.value==tile.value:
                                 print("merge0")
-        for pairs in  merging_tiles:
-            self.merge_tiles(pairs[0],pairs[1])
+                                merging_tiles.append([tile_checked,tile])
+            for pairs in  merging_tiles:
+                self.merge_tiles(pairs[0],pairs[1])
         #self.new_tile()
     def update(self):
         #checks if any tile is currently moving to decide whether
