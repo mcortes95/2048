@@ -29,5 +29,11 @@ class tile:
         if self.px_position.y<50*self.position.y-20:
             self.px_position.y+=10
 
+    def busy(self):
+        if self.px_position.x==50*self.position.x-20 and self.px_position.y==50*self.position.y-20:
+            return False
+        else:
+            return True
+
 
 
