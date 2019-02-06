@@ -7,34 +7,68 @@ class Player:
     def __init__(self):
         self.tiles=[]
         self.empty=[]
+        self.tile_counter=0
         self.fill_empty()
-        self.temp=self.empty[random.randint(0,len(self.empty)-1)]
-        self.add_tile(self.temp.x,self.temp.y)
-        print(len(self.empty))
-        self.empty.remove(self.temp)
-        self.temp=self.empty[random.randint(0,len(self.empty)-1)]
-        self.add_tile(self.temp.x,self.temp.y)
-        self.empty.remove(self.temp)
-        print(len(self.empty))
+        self.game_testing()
+        #self.new_game()
         self.busy=False
         self.flag=False
+        self.score=0
+        self.high_scores=open("scores.txt","r")
+        self.new_score=open("scores.txt","a")
+        self.continue_game=True
+        self.check_hs()
+        self.score_flag=False
+        self.tiles_to_remove=[]
+        self.merging_tiles=[]
+        self.update_tile_color=[]
+        
+    def game_testing(self): 
+        for x in range(3):
+            self.add_tile(x+1,1)
+            print(len(self.empty))
+        for tile in range(3):
+            if tile<2:
+                self.tiles[tile].value=2
+                self.tiles[tile].color=15
+            else:
+                self.tiles[tile].value=4
+                self.tiles[tile].color=14
 
-        #if any(tile.busy()==True for tile  in self.tiles):
-            #self.busy=True
+    def new_game(self):
+        for x in range(2):
+            self.temp=self.empty[random.randint(0,len(self.empty)-1)]
+            self.add_tile(self.temp.x,self.temp.y)
+            print(len(self.empty))
+            self.empty.remove(self.temp)
+
+    def get_score_flag(self):
+        return self.score_flag
+
+    def check_hs(self):
+        self.high_score=0
+        for score in  self.high_scores:
+            print(type(score))
+            self.high_score=max(int(score),self.high_score)
+
+    def check_game(self):
+        if len(self.tiles) is 16:
+            return False
+        else:
+            return True
 
     def new_tile(self):
-        for tile in self.tiles:
-            print(tile.position.x,tile.position.y)
-        print("TODO")
-        added_tile=False
-        while added_tile==False:
-            x=random.randint(1,4)
-            y=random.randint(1,4)
-            print(x,y)
-            if any(tile.position.x==x and tile.position.y==y for tile in self.tiles) is False:
-                added_tile=True
-            print(added_tile)
-        self.add_tile(x,y)
+        print(len(self.tiles))
+        if self.check_game():
+            added_tile=False
+            while added_tile==False:
+                x=random.randint(1,4)
+                y=random.randint(1,4)
+                if any(tile.position.x==x and tile.position.y==y for tile in self.tiles) is False:
+                    added_tile=True
+            #print(added_tile)
+            self.add_tile(x,y)
+
     def check_tile(self,x,y):
         if x>4 or y>4 or x<1 or y<1:
             return -1
@@ -42,11 +76,22 @@ class Player:
             if tile.position.x == x and tile.position.y == y:
                 return tile
         return 0
+    
+    def remove_tiles(self):
+        for tile in self.tiles_to_remove:
+            self.tiles.remove(tile)
+        self.tiles_to_remove=[]
+
+    def update_color(self,tiles):
+        tiles.color-=1
 
     def merge_tiles(self,update_tile,delete_tile):
-        print("TODO")
         update_tile.value*=2
-        self.tiles.remove(delete_tile)
+        delete_tile.value*=0
+        self.score+=update_tile.value
+        #update_tile.color-=1
+        #self.tiles.remove(delete_tile)
+        self.tiles_to_remove.append(delete_tile)
 
     def move(self,x,y):
         if x==0:
@@ -72,60 +117,107 @@ class Player:
                 end=0
                 step=-1
         #moves tiles in desired direction in the correct order to prevent them from colliding 
+        #self.merging_tiles=[]
+        self.update_tile_color=[]
         for v in range(start,end,step):
-            merging_tiles=[]
+            self.merging_tiles=[]
             for tile in self.tiles:
                 #will manipulate tiles row by row when sliding up or down 
-                 
                 if tile.position.y == v and x == 0:
                     mv=vector.vector(tile.position.x+x,tile.position.y+y)
-                    print(mv)
                     tile_checked=self.check_tile(mv.x,mv.y)
                     #print(tile_checked.value)
                     if type(tile_checked) is not int:
                         if tile_checked.value==tile.value:
-                            print("merge")
-                            print(tile_checked.position.x,tile_checked.position.y)
-                            print(tile.position.x,tile.position.y)
-                            merging_tiles.append([tile_checked,tile])
+                            """
+                            duplicate=False
+                            for x in self.merging_tiles:
+                                if x[0]==tile or x[1]==tile:
+                                    duplicate=True
+                            if duplicate==False:
+                                self.merging_tiles.append([tile_checked,tile])
+                            """
+                            print("merging")
+                            print(tile_checked.value,tile.value)
+                            tile.position=mv
+                            self.merging_tiles.append([tile_checked,tile])
+                            #self.merge_tiles(tile_checked,tile)
                     while tile_checked == 0:
                         tile.position=vector.vector(mv.x,mv.y)    
                         mv=vector.vector(tile.position.x+x,tile.position.y+y)
                         tile_checked=self.check_tile(mv.x,mv.y)
                         if type(tile_checked) is not int:
                             if tile_checked.value==tile.value:
-                                merging_tiles.append([tile_checked,tile])
-                                print("merge0")
+                                print("merging")
+                                print(tile_checked.value,tile.value)
+                                """
+                                duplicate=False
+                                for x in self.merging_tiles:
+                                    if x[0]==tile or x[1]==tile:
+                                        duplicate=True
+                                if duplicate==False:
+                                    self.merging_tiles.append([tile_checked,tile])
+                                """
+                                tile.position=mv
+                                self.merging_tiles.append([tile_checked,tile])
+                                #self.merge_tiles(tile_checked,tile)
                 #will manipulate tiles column by column when sliding left or right 
                 elif tile.position.x == v and y == 0:
                     mv=vector.vector(tile.position.x+x,tile.position.y+y)
-                    print(mv)
+                    #print(mv)
                     tile_checked=self.check_tile(mv.x,mv.y)
                     #print(tile_checked.value)
                     if type(tile_checked) is not int:
                         if tile_checked.value==tile.value:
-                            print("merge")
-                            merging_tiles.append([tile_checked,tile])
+                            print("merging")
+                            print(tile_checked.value,tile.value)
+                            tile.position=mv
+                            self.merging_tiles.append([tile_checked,tile])
                     while tile_checked == 0:
                         tile.position=vector.vector(mv.x,mv.y)    
                         mv=vector.vector(tile.position.x+x,tile.position.y+y)
                         tile_checked=self.check_tile(mv.x,mv.y)
                         if type(tile_checked) is not int:
                             if tile_checked.value==tile.value:
-                                print("merge0")
-                                merging_tiles.append([tile_checked,tile])
-            for pairs in  merging_tiles:
+                                print("merging")
+                                print(tile_checked.value,tile.value)
+                                tile.position=mv
+                                self.merging_tiles.append([tile_checked,tile])
+            #"""
+            for pairs in self.merging_tiles:
+                print(pairs[0].id,pairs[1].id)
                 self.merge_tiles(pairs[0],pairs[1])
+                #self.update_color(pairs[0])
+                self.update_tile_color.append(pairs[0])
+            #"""
         #self.new_tile()
+
+
     def update(self):
+        if len(self.tiles) is 16:
+            pyxel.quit
         #checks if any tile is currently moving to decide whether
         #or not to allow user to move tiles
         if any(tile.busy()==True for tile  in self.tiles):
             self.busy=True
         else:
             self.busy=False
+        """
+        for pairs in self.merging_tiles:
+            if pairs[1].busy()is False:
+                self.merge_tiles(pairs[0],pairs[1])
+                #self.remove_tiles()
+        self.merging_tiles=[]
+        """
         if self.busy==False:
             if self.flag:
+                """
+                for pairs in self.merging_tiles:
+                    self.merge_tiles(pairs[0],pairs[1])
+                """
+                for x in self.update_tile_color:
+                    self.update_color(x)
+                self.remove_tiles()
                 self.new_tile()
                 self.flag=False
         if self.busy==False:
@@ -145,14 +237,21 @@ class Player:
                 print("R")
                 self.move(1,0)
                 self.flag=True
-            #self.new_tile()
-        
+        if self.score>=self.high_score:
+            self.high_score=self.score
+            self.score_flag=True
+
     def add_tile(self,x,y):
-        self.tiles.append(tile.tile(x,y))
+        self.tiles.append(tile.tile(x,y,self.tile_counter))
+        self.tile_counter+=1
 
     def draw(self):
         for tile in self.tiles:
             tile.show()
+        pyxel.rect(0,215,210,255,3)
+        pyxel.rect(0,210,210,215,2)
+        pyxel.text(80,225,"SCORE: "+str(self.score),15)        
+        pyxel.text(80,235,"HIGH SCORE: "+str(self.high_score),15)
 
     def fill_empty(self):
         for x in range(1,5):
