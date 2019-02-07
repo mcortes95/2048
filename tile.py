@@ -1,17 +1,17 @@
 import vector
 import pyxel
 import random
-
+ 
 
 class tile:
     def __init__(self,x,y,i):
-        #self.value
-        #self.color
         self.id=i
         self.tile_value()
         self.position=vector.vector(x,y)
         self.px_position=vector.vector(50*x-20,50*y-20)
-        self.velocity=vector.vector(0,0) 
+        self.velocity=vector.vector(0,0)
+        self.slide_flag=False
+
 
     def tile_value(self):
         temp=random.randint(1,10)

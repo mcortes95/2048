@@ -3,6 +3,7 @@ import vector
 import tile
 import random
 
+
 class Player:
     def __init__(self):
         self.tiles=[]
@@ -128,38 +129,25 @@ class Player:
                     tile_checked=self.check_tile(mv.x,mv.y)
                     #print(tile_checked.value)
                     if type(tile_checked) is not int:
-                        if tile_checked.value==tile.value:
-                            """
-                            duplicate=False
-                            for x in self.merging_tiles:
-                                if x[0]==tile or x[1]==tile:
-                                    duplicate=True
-                            if duplicate==False:
-                                self.merging_tiles.append([tile_checked,tile])
-                            """
+                        if tile_checked.value==tile.value and tile_checked.slide_flag==False and tile.slide_flag==False:
                             print("merging")
                             print(tile_checked.value,tile.value)
                             tile.position=mv
                             self.merging_tiles.append([tile_checked,tile])
-                            #self.merge_tiles(tile_checked,tile)
+                            tile_checked.slide_flag=True
+                            tile.slide_flag=True
                     while tile_checked == 0:
                         tile.position=vector.vector(mv.x,mv.y)    
                         mv=vector.vector(tile.position.x+x,tile.position.y+y)
                         tile_checked=self.check_tile(mv.x,mv.y)
                         if type(tile_checked) is not int:
-                            if tile_checked.value==tile.value:
+                            if tile_checked.value==tile.value and tile_checked.slide_flag==False and tile.slide_flag==False:
                                 print("merging")
                                 print(tile_checked.value,tile.value)
-                                """
-                                duplicate=False
-                                for x in self.merging_tiles:
-                                    if x[0]==tile or x[1]==tile:
-                                        duplicate=True
-                                if duplicate==False:
-                                    self.merging_tiles.append([tile_checked,tile])
-                                """
                                 tile.position=mv
                                 self.merging_tiles.append([tile_checked,tile])
+                                tile_checked.slide_flag=True
+                                tile.slide_flag=True
                                 #self.merge_tiles(tile_checked,tile)
                 #will manipulate tiles column by column when sliding left or right 
                 elif tile.position.x == v and y == 0:
@@ -168,21 +156,25 @@ class Player:
                     tile_checked=self.check_tile(mv.x,mv.y)
                     #print(tile_checked.value)
                     if type(tile_checked) is not int:
-                        if tile_checked.value==tile.value:
+                        if tile_checked.value==tile.value and tile_checked.slide_flag==False and tile.slide_flag==False:
                             print("merging")
                             print(tile_checked.value,tile.value)
                             tile.position=mv
                             self.merging_tiles.append([tile_checked,tile])
+                            tile_checked.slide_flag=True
+                            tile.slide_flag=True
                     while tile_checked == 0:
                         tile.position=vector.vector(mv.x,mv.y)    
                         mv=vector.vector(tile.position.x+x,tile.position.y+y)
                         tile_checked=self.check_tile(mv.x,mv.y)
                         if type(tile_checked) is not int:
-                            if tile_checked.value==tile.value:
+                            if tile_checked.value==tile.value and tile_checked.slide_flag==False and tile.slide_flag==False:
                                 print("merging")
                                 print(tile_checked.value,tile.value)
                                 tile.position=mv
                                 self.merging_tiles.append([tile_checked,tile])
+                                tile_checked.slide_flag=True
+                                tile.slide_flag=True
             #"""
             for pairs in self.merging_tiles:
                 print(pairs[0].id,pairs[1].id)
@@ -191,7 +183,6 @@ class Player:
                 self.update_tile_color.append(pairs[0])
             #"""
         #self.new_tile()
-
 
     def update(self):
         if len(self.tiles) is 16:
@@ -202,24 +193,15 @@ class Player:
             self.busy=True
         else:
             self.busy=False
-        """
-        for pairs in self.merging_tiles:
-            if pairs[1].busy()is False:
-                self.merge_tiles(pairs[0],pairs[1])
-                #self.remove_tiles()
-        self.merging_tiles=[]
-        """
         if self.busy==False:
             if self.flag:
-                """
-                for pairs in self.merging_tiles:
-                    self.merge_tiles(pairs[0],pairs[1])
-                """
                 for x in self.update_tile_color:
                     self.update_color(x)
                 self.remove_tiles()
                 self.new_tile()
                 self.flag=False
+                for  tile in self.tiles:
+                    tile.slide_flag=False
         if self.busy==False:
             if pyxel.btnp(pyxel.KEY_W):
                 print("U")
