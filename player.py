@@ -10,8 +10,8 @@ class Player:
         self.empty=[]
         self.tile_counter=0
         self.fill_empty()
-        self.game_testing()
-        #self.new_game()
+        #self.game_testing()
+        self.new_game()
         self.busy=False
         self.flag=False
         self.score=0
@@ -23,6 +23,7 @@ class Player:
         self.tiles_to_remove=[]
         self.merging_tiles=[]
         self.update_tile_color=[]
+        pyxel.load("my_resource.pyxel")
         
     def game_testing(self): 
         for x in range(3):
@@ -51,6 +52,10 @@ class Player:
         for score in  self.high_scores:
             print(type(score))
             self.high_score=max(int(score),self.high_score)
+
+    def check_gameover(self):
+        print("TODO\nDefine an end state.")
+
 
     def check_game(self):
         if len(self.tiles) is 16:
@@ -88,13 +93,12 @@ class Player:
 
     def merge_tiles(self,update_tile,delete_tile):
         update_tile.value*=2
-        delete_tile.value*=0
+        delete_tile.value*=2
         self.score+=update_tile.value
-        #update_tile.color-=1
-        #self.tiles.remove(delete_tile)
         self.tiles_to_remove.append(delete_tile)
 
     def move(self,x,y):
+        #pyxel.load
         if x==0:
             #move up
             if y==-1:
@@ -175,18 +179,14 @@ class Player:
                                 self.merging_tiles.append([tile_checked,tile])
                                 tile_checked.slide_flag=True
                                 tile.slide_flag=True
-            #"""
             for pairs in self.merging_tiles:
                 print(pairs[0].id,pairs[1].id)
                 self.merge_tiles(pairs[0],pairs[1])
-                #self.update_color(pairs[0])
                 self.update_tile_color.append(pairs[0])
-            #"""
-        #self.new_tile()
 
     def update(self):
         if len(self.tiles) is 16:
-            pyxel.quit
+            self.check_gameover()
         #checks if any tile is currently moving to decide whether
         #or not to allow user to move tiles
         if any(tile.busy()==True for tile  in self.tiles):
@@ -202,21 +202,22 @@ class Player:
                 self.flag=False
                 for  tile in self.tiles:
                     tile.slide_flag=False
+        #Checks to make sure no other actions are occuring before accepting user input
         if self.busy==False:
             if pyxel.btnp(pyxel.KEY_W):
-                print("U")
+                pyxel.play(0,1)
                 self.move(0,-1)
                 self.flag=True
             elif pyxel.btnp(pyxel.KEY_A):
-                print("L")
+                pyxel.play(0,1)
                 self.move(-1,0)
                 self.flag=True
             elif pyxel.btnp(pyxel.KEY_S):
-                print("D")
+                pyxel.play(0,1)
                 self.move(0,1)
                 self.flag=True
             elif pyxel.btnp(pyxel.KEY_D):
-                print("R")
+                pyxel.play(0,1)
                 self.move(1,0)
                 self.flag=True
         if self.score>=self.high_score:
