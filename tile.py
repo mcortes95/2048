@@ -32,13 +32,12 @@ class tile:
                 self.px_position.y,
                 str(self.value),
                 0)
-        pyxel.text(self.px_position.x-18,
-                self.px_position.y-18,
-                str(self.id),
-                0)
+        #pyxel.text(self.px_position.x-18,
+        #        self.px_position.y-18,
+        #        str(self.id),
+        #        0)
+
     def update(self):
-        #self.px_position.x=(50*self.position.x-20)
-        #self.px_position.y=(50*self.position.y-20)
         if self.px_position.x<50*self.position.x-20:
             self.px_position.x+=10
         if self.px_position.x>50*self.position.x-20:

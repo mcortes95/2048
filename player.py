@@ -90,10 +90,11 @@ class Player:
 
     def update_color(self,tiles):
         tiles.color-=1
+        tiles.value*=2
 
     def merge_tiles(self,update_tile,delete_tile):
-        update_tile.value*=2
-        delete_tile.value*=2
+        #update_tile.value*=2
+        #delete_tile.value*=2
         self.score+=update_tile.value
         self.tiles_to_remove.append(delete_tile)
 

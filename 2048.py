@@ -5,7 +5,7 @@ import player
 import random
 class App:
     def __init__(self):
-        pyxel.init(210,255,caption="2048")
+        pyxel.init(210,255,caption="2048",fps=60)
         pyxel.mouse(True)
         self.pl=player.Player()
         pyxel.run(self.update,self.draw)
